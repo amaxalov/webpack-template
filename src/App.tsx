@@ -1,7 +1,7 @@
-import * as React from 'react';
+import * as React from 'react'
 
-export interface HelloWorldProps {
-  lang: string;
+export interface Props {
+  lang: string
 }
 
-export const App = (props: HelloWorldProps) => <h1>Hi from React! Welcome to {props.lang}!</h1>;
+export const App: React.FC<Props> = ({ lang }: Props) => <h1>123 Hi from$ Rea ct! Welcome to{lang}!</h1>
