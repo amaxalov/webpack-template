@@ -1,1 +1,1 @@
-# webpack-template
+# webpack + React + eslint + prettier + typescript template
