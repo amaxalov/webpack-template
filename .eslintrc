@@ -44,7 +44,8 @@
     "react/jsx-max-props-per-line": 0,
     "react/jsx-props-no-multi-spaces": 0,
     "react/jsx-tag-spacing": 0,
-    "react/jsx-wrap-multilines": 0
+    "react/jsx-wrap-multilines": 0,
+    "react/jsx-props-no-spreading": 0
   },
   "ignorePatterns": ["node_modules/*", "build/*", "webpack.config.js"]
 }

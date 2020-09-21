@@ -1,34 +1,34 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const TerserWebpackPlugin = require('terser-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const MiniCSSExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const TerserWebpackPlugin = require('terser-webpack-plugin')
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin')
 
-const isEnvDevelopment = process.env.NODE_ENV === 'development';
-const isEnvProduction = process.env.NODE_ENV === 'production';
+const isEnvDevelopment = process.env.NODE_ENV === 'development'
+const isEnvProduction = process.env.NODE_ENV === 'production'
 
-const { CLIENT_APP = 'template' } = process.env;
+const { CLIENT_APP = 'template' } = process.env
 
 const optimization = () => {
   const config = {
     splitChunks: {
       chunks: 'all',
     },
-  };
-
-  if (isEnvProduction) {
-    config.minimizer = [new OptimizeCssAssetsPlugin(), new TerserWebpackPlugin()];
   }
 
-  return config;
-};
+  if (isEnvProduction) {
+    config.minimizer = [new OptimizeCssAssetsPlugin(), new TerserWebpackPlugin()]
+  }
 
-const fileName = (ext) => (isEnvDevelopment ? `[name].${ext}` : `[name].[hash].${ext}`);
+  return config
+}
+
+const fileName = (ext) => (isEnvDevelopment ? `[name].${ext}` : `[name].[hash].${ext}`)
 
 const cssLoaders = (extra) => {
   const loaders = [
@@ -45,14 +45,14 @@ const cssLoaders = (extra) => {
         modules: true,
       },
     },
-  ];
+  ]
 
   if (extra) {
-    loaders.push(extra);
+    loaders.push(extra)
   }
 
-  return loaders;
-};
+  return loaders
+}
 
 const plugins = () => {
   const base = [
@@ -74,29 +74,31 @@ const plugins = () => {
     new MiniCSSExtractPlugin({
       filename: fileName('css'),
     }),
-  ];
+  ]
 
   if (isEnvDevelopment) {
-    new HardSourceWebpackPlugin({
-      cacheDirectory: path.resolve(__dirname, 'tmp/hard-source/[confighash]'),
-      configHash(webpackConfig) {
-        const hash = require('node-object-hash')({ sort: false }).hash(webpackConfig);
+    base.push(
+      new HardSourceWebpackPlugin({
+        cacheDirectory: path.resolve(__dirname, './tmp/hard-source/[confighash]'),
+        configHash(webpackConfig) {
+          const hash = require('node-object-hash')({ sort: false }).hash(webpackConfig)
 
-        return `${hash}-${CLIENT_APP.toLowerCase()}`;
-      },
-    });
+          return `${hash}-${CLIENT_APP.toLowerCase()}`
+        },
+      })
+    )
   }
 
   if (isEnvProduction) {
-    base.push(new BundleAnalyzerPlugin());
+    base.push(new BundleAnalyzerPlugin())
   }
 
-  return base;
-};
+  return base
+}
 
 module.exports = {
   context: path.resolve(__dirname, 'src'),
-  entry: path.resolve(__dirname, 'src/index.tsx'),
+  entry: ['@babel/polyfill', path.resolve(__dirname, 'src/index.tsx')],
   mode: 'development',
   output: {
     path: path.resolve(__dirname, 'build'),
@@ -105,23 +107,24 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
     alias: {
-      '@components': path.resolve(__dirname, 'src/components'),
+      '@': path.resolve(__dirname, 'src'),
     },
   },
   optimization: optimization(),
   devServer: {
     port: 4200,
     hot: isEnvDevelopment,
-    compress: true,
+    compress: isEnvProduction,
     watchContentBase: true,
+    historyApiFallback: true,
     progress: true,
   },
   module: {
     rules: [
       {
-        test: /\.(ts|tsx)$/,
+        test: /\.(ts|js)x?$/,
         use: [
-          'awesome-typescript-loader',
+          'babel-loader',
           {
             options: {
               eslintPath: require.resolve('eslint'),
@@ -130,11 +133,6 @@ module.exports = {
           },
         ],
         exclude: /node_modules/,
-      },
-      {
-        enforce: 'pre',
-        test: /\.js$/,
-        loader: 'source-map-loader',
       },
       {
         test: /\.css$/,
@@ -146,13 +144,20 @@ module.exports = {
       },
       {
         test: /\.(png|jpg|svg|gif)$/,
-        use: ['file-loader'],
+        loader: 'file-loader',
+        options: {
+          outputPath: 'images',
+        },
       },
       {
         test: /\.(ttf|woff|woff2|eot)$/,
-        use: ['file-loader'],
+        loader: 'file-loader',
+        options: {
+          name: '[hash].[ext]',
+          outputPath: 'fonts',
+        },
       },
     ],
   },
   plugins: plugins(),
-};
+}

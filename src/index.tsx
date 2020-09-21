@@ -1,11 +1,10 @@
 import * as React from 'react'
-import * as ReactDOM from 'react-dom'
-import { App } from './App'
+import { render } from 'react-dom'
 
-export const Root: React.FC<unknown> = () => (
+export const Root: React.FC = () => (
   <React.StrictMode>
-    <App lang='12' />
+    <div>123</div>
   </React.StrictMode>
 )
 
-ReactDOM.render(<Root />, document.getElementById('root'))
+render(<Root />, document.getElementById('root'))
