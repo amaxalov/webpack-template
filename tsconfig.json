@@ -1,20 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
     "jsx": "react",
-    "module": "commonjs",
-    "noImplicitAny": true,
     "outDir": "./build/",
     "lib": ["es6", "dom"],
-    "preserveConstEnums": true,
-    "removeComments": true,
-    "sourceMap": true,
+    "esModuleInterop": true,
     "rootDir": "src",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["react", "node"]
+    "types": ["react", "node", "jest"]
   },
   "include": ["./src/"]
 }
